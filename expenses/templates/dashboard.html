@@ -1,0 +1,260 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: #4e73df;
+            background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+            color: white;
+        }
+        .sidebar-brand {
+            height: 4.375rem;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 800;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            letter-spacing: 0.05rem;
+            z-index: 1;
+        }
+        .nav-item {
+            position: relative;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .nav-link:hover {
+            color: white;
+        }
+        .nav-link i {
+            margin-right: 10px;
+        }
+        .active {
+            color: white !important;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        .expense-item {
+            border-left: 0.25rem solid #4e73df;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: transform 0.2s;
+        }
+        .expense-item:hover {
+            transform: translateX(5px);
+        }
+        .expense-amount {
+            font-weight: bold;
+            color: #e74a3b;
+        }
+        .btn-add-expense {
+            padding: 8px 16px;
+            font-weight: 600;
+        }
+        .category-badge {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse bg-gradient-primary">
+                <div class="position-sticky pt-3">
+                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
+                        <i class="fas fa-money-bill-wave mr-2"></i>
+                        <span>Expense Tracker</span>
+                    </a>
+                    <hr class="sidebar-divider my-0">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'dashboard' %}">
+                                <i class="fas fa-fw fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'add_expense' %}">
+                                <i class="fas fa-fw fa-plus-circle"></i>
+                                <span>Add Expense</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-fw fa-chart-pie"></i>
+                                <span>Reports</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">
+                                <i class="fas fa-fw fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dashboard</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="{% url 'add_expense' %}" class="btn btn-primary btn-add-expense">
+                            <i class="fas fa-plus"></i> Add Expense
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Total Expenses</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">₹{{ total_expenses|default:"0" }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-wallet fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Categories</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ categories|length|default:"0" }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-tags fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Recent Expenses</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expenses|length|default:"0" }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-list fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Expenses -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">Recent Expenses</h6>
+                        {% if categories %}
+                        <select class="form-select form-select-sm w-auto" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category }}">{{ category }}</option>
+                            {% endfor %}
+                        </select>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        {% if expenses %}
+                            <div class="list-group" id="expensesList">
+                                {% for expense in expenses %}
+                                <div class="expense-item list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">{{ expense.name }}</h5>
+                                        <small class="text-muted">{{ expense.date }}</small>
+                                        {% if expense.category %}
+                                        <span class="badge bg-primary category-badge ms-2">{{ expense.category }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class="expense-amount me-3">₹{{ expense.amount }}</span>
+                                        <a href="{% url 'delete_expense' expense.id %}" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-coins fa-3x text-gray-300 mb-3"></i>
+                                <h5 class="text-gray-500">No expenses recorded yet</h5>
+                                <p>Start by adding your first expense</p>
+                                <a href="{% url 'add_expense' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Expense
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Category filter functionality
+        document.getElementById('categoryFilter')?.addEventListener('change', function() {
+            const selectedCategory = this.value.toLowerCase();
+            const expenseItems = document.querySelectorAll('#expensesList .expense-item');
+            
+            expenseItems.forEach(item => {
+                const itemCategory = item.querySelector('.badge')?.textContent.toLowerCase() || '';
+                if (!selectedCategory || itemCategory.includes(selectedCategory)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Confirm before deleting
+        document.querySelectorAll('.btn-danger').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!confirm('Are you sure you want to delete this expense?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
