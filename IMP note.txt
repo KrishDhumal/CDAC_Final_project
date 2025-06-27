@@ -1,0 +1,8 @@
+ Important note :
+Have submitted a fully functioning Expense tracker ,using Django rest etc,\
+Features :Login authentication, user can register login etc since a working database is present .User can track his expenses ,feature to add and delete expense ,html css js,bootstrap used .
+Default login : Username :krishD.  Password:Cdac123
+
+You can also register and create a new user .
+
+To run it use python manage.py runserver.
